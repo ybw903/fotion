@@ -1,0 +1,16 @@
+.App {
+  height: 100vh;
+}
+
+.leftMenu {
+  display: flex;
+  flex-direction: column;
+  width: 25%;
+  max-width: 700px;
+  height: 100%;
+  background-color: #eee;
+}
+
+.dir {
+  padding-block: 0.2em;
+}

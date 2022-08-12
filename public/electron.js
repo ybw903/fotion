@@ -55,14 +55,30 @@ ipcMain.on("toMain", (evt, args) => {
   if (args.type === "GET_DIRS") {
     const desktopDir = app.getPath("desktop");
     const workspaceDir = `${desktopDir}/a-did`;
-    let fileNames = [];
-    fs.readdir(workspaceDir, (err, files) => {
-      files.forEach((file) => fileNames.push(file));
-      console.log(fileNames);
-      mainWindow.webContents.send("fromMain", {
-        type: "SEND_DIRS",
-        fileNames,
-      });
+    const getDirs = (file, level) => {
+      const stat = fs.statSync(file);
+      if (stat.isFile()) {
+        return { name: file.substring(desktopDir.length), type: "file", level };
+      }
+      if (stat.isDirectory()) {
+        const dir = {
+          name: file.substring(desktopDir.length),
+          type: "dir",
+          files: [],
+          level,
+        };
+        fs.readdirSync(file).forEach((nextFile) => {
+          const nextDirs = getDirs(`${file}/${nextFile}`, level + 1);
+          dir.files.push(nextDirs);
+        });
+        return dir;
+      }
+    };
+
+    const dirs = getDirs(workspaceDir, 0);
+    mainWindow.webContents.send("fromMain", {
+      type: "SEND_DIRS",
+      dirs,
     });
   }
 });
