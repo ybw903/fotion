@@ -1,10 +1,12 @@
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import remarkGfm from "remark-gfm";
 
 const MarkDownViewr = ({ markdown }: { markdown: string }) => {
   return (
     <div style={{ padding: "20px" }}>
       <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
         components={{
           code({ node, inline, className, children, ...props }) {
             const match = /language-(\w+)/.exec(className || "");
