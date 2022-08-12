@@ -58,7 +58,14 @@ ipcMain.on("toMain", (evt, args) => {
     const getDirs = (file, level) => {
       const stat = fs.statSync(file);
       if (stat.isFile()) {
-        return { name: file.substring(desktopDir.length), type: "file", level };
+        // md파일이 아닌경우 추가할 것.
+        const md = fs.readFileSync(file, "utf-8");
+        return {
+          name: file.substring(desktopDir.length),
+          type: "file",
+          level,
+          docs: md,
+        };
       }
       if (stat.isDirectory()) {
         const dir = {
