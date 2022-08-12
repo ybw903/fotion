@@ -1,17 +1,41 @@
 .App {
+  display: flex;
   height: 100vh;
 }
 
 .leftMenu {
   display: flex;
   flex-direction: column;
-  width: 25%;
-  max-width: 700px;
+  width: 280px;
   height: 100%;
   background-color: #eee;
   overflow-y: auto;
 }
 
+.menuList {
+  padding: 10px;
+}
+
+.main {
+  height: 100%;
+  width: calc(100% - 280px);
+  overflow: auto;
+}
+
+.item {
+  padding: 0.2em;
+}
+
 .dir {
-  padding-block: 0.2em;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.file {
+  padding: 0.2em;
+  margin: 0.2em;
+  font-size: 12px;
+  background: #fff;
+  border-radius: 10px;
+  cursor: pointer;
 }
