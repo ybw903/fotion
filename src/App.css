@@ -10,10 +10,60 @@
   height: 100%;
   background-color: #eee;
   overflow-y: auto;
+  transition: width 0.5s;
+  box-shadow: 2px 0px 2px 1px rgba(0, 0, 0, 0.2);
+}
+
+.leftMenu-fold {
+  width: 50px;
+  background-color: #eee;
+  overflow-y: auto;
+  transition: width 0.5s;
+  box-shadow: 2px 0px 2px 1px rgba(0, 0, 0, 0.2);
 }
 
 .menuList {
+  padding: 5px 10px;
+}
+
+.menu {
+  height: 90%;
+}
+
+.menuHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 10px;
+  font-size: 21px;
+  font-weight: 700;
+  border-bottom: 1px solid #000;
+}
+
+.selectMenuTab {
+  border-top: 1px solid #000;
+  display: flex;
+  height: 10%;
+  justify-content: space-around;
+}
+
+.menuTab {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  margin: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  width: 100px;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+}
+
+.menuSearch {
+  padding: 20px;
 }
 
 .main {
@@ -23,7 +73,17 @@
 }
 
 .item {
+  display: flex;
+  align-items: center;
   padding: 0.2em;
+}
+
+.item-selected {
+  display: flex;
+  align-items: center;
+  padding: 0.2em;
+  background: #fff;
+  border-radius: 5px;
 }
 
 .dir {
@@ -34,8 +94,19 @@
 .file {
   padding: 0.2em;
   margin: 0.2em;
-  font-size: 12px;
-  background: #fff;
-  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  /* background: #fff;
+  border-radius: 10px; */
   cursor: pointer;
+}
+.searchdResult {
+  padding-block: 10px;
+}
+
+.searchedFile {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
 }
