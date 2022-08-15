@@ -27,13 +27,15 @@
 }
 
 .menu {
-  height: 90%;
+  height: calc(100% - 150px);
+  overflow-y: auto;
 }
 
 .menuHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 50px;
   padding: 10px;
   font-size: 21px;
   font-weight: 700;
@@ -43,7 +45,7 @@
 .selectMenuTab {
   border-top: 1px solid #000;
   display: flex;
-  height: 10%;
+  height: 80px;
   justify-content: space-around;
 }
 
@@ -84,6 +86,7 @@
   padding: 0.2em;
   background: #fff;
   border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 3px 3px;
 }
 
 .dir {
@@ -109,4 +112,9 @@
   align-items: center;
   font-size: 14px;
   font-weight: 600;
+}
+
+.highlight {
+  background: #f6ec83;
+  padding: 2px;
 }
