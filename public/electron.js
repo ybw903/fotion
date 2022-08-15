@@ -4,7 +4,7 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require("path");
 const fs = require("fs");
 const isDev = require("electron-is-dev");
-const { ipcMain } = require("electron");
+const { ipcMain, globalShortcut } = require("electron");
 
 let mainWindow;
 
@@ -50,6 +50,17 @@ app.on("activate", () => {
     createWindow();
   }
 });
+
+app
+  .whenReady()
+  .then(() => {
+    globalShortcut.register("CommandOrControl+F", () => {
+      mainWindow.webContents.send("fromMain", {
+        type: "SEND_SEARCH",
+      });
+    });
+  })
+  .then(createWindow);
 
 ipcMain.on("toMain", (evt, args) => {
   if (args.type === "GET_DIRS") {

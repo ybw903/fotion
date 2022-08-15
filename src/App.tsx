@@ -7,6 +7,7 @@ import { IoMenu, IoFolderOpen, IoSearch } from "react-icons/io5";
 import Directory from "./componets/Directory";
 import Input from "./componets/Input";
 import SearchedFile from "./componets/searchedFile";
+import SearchModal from "./componets/SearchModal";
 
 export interface IFile {
   name: string;
@@ -31,6 +32,18 @@ const App = () => {
   const [searchResults, setSearchResults] = useState<
     undefined | { file: IFile; indexes: number[] }[]
   >();
+  const [showSearchModal, setShowSearchModal] = useState(false);
+
+  const appendSearchResultHightMDdocs = (file: IFile) => {
+    if (!file.docs) return;
+    const copyedMD = file.docs;
+    const regExp = new RegExp(search, "g");
+    const appendedDocs = copyedMD.replace(
+      regExp,
+      `<span className = 'highlight'>${search}</span>`
+    );
+    setMD(appendedDocs);
+  };
 
   const handleSelectSearchedItem = (file: IFile) => {
     setMD(file.docs);
@@ -80,6 +93,9 @@ const App = () => {
     window.api.receive("fromMain", (data) => {
       if (data.type === "SEND_DIRS") {
         setDirs(data.dirs);
+      }
+      if (data.type === "SEND_SEARCH") {
+        setShowSearchModal((prev) => !prev);
       }
     });
   }, []);
@@ -152,6 +168,7 @@ const App = () => {
         )}
       </div>
       <div className="main">{md && <MarkDownViewr markdown={md} />}</div>
+      {showSearchModal && <SearchModal />}
     </div>
   );
 };
