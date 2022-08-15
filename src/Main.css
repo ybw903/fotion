@@ -113,3 +113,34 @@
   background: #f6ec83;
   padding: 2px;
 }
+
+.editTextArea {
+  height: 100%;
+  width: 50%;
+  border: none;
+  border-right: 1px solid lightgray;
+  padding: 20px;
+}
+
+.editTextArea:focus {
+  outline: none;
+}
+
+.docsView-edit {
+  height: 100%;
+  width: 50%;
+}
+
+.viewr {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+.mdViewr {
+  width: 100%;
+}
+
+.mdViewr-edit {
+  width: 50%;
+}

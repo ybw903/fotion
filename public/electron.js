@@ -108,4 +108,8 @@ ipcMain.on("toMain", (evt, args) => {
       dirs,
     });
   }
+
+  if (args.type === "SAVE_DOCS") {
+    fs.writeFileSync(args.dir, args.docs, { encoding: "utf-8" });
+  }
 });

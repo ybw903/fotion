@@ -16,7 +16,7 @@ const App = () => {
   }, []);
 
   return (
-    <div className="App">
+    <div className={showSplash ? "App-splash" : "App"}>
       {showSplash && (
         <Splash
           workspace={workspace}

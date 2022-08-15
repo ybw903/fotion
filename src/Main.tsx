@@ -1,5 +1,5 @@
 import debounce from "lodash.debounce";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./Main.css";
 import MarkDownViewr from "./componets/MarkDownVierw";
 import { searchPattern } from "./utils/search";
@@ -8,6 +8,7 @@ import Directory from "./componets/Directory";
 import Input from "./componets/Input";
 import SearchedFile from "./componets/searchedFile";
 import SearchModal from "./componets/SearchModal";
+import useSearch from "./hooks/useSearch";
 
 export interface IFile {
   name: string;
@@ -30,34 +31,17 @@ const Main = ({ workspace }: MainProps) => {
   const [dirs, setDirs] = useState();
   const [menuTab, setMenuTab] = useState(MENU_TYPE.DIRS);
   const [menuFold, setMenuFold] = useState(false);
-  const [md, setMD] = useState<undefined | string>();
-  const [search, setSearch] = useState("");
+  const [md, setMD] = useState<undefined | { file?: IFile; docs?: string }>();
+
   const [selectedItem, setSelectedItem] = useState("");
   const [searchResults, setSearchResults] = useState<
     undefined | { file: IFile; indexes: number[] }[]
   >();
   const [showSearchModal, setShowSearchModal] = useState(false);
 
-  const appendSearchResultHightMDdocs = (file: IFile) => {
-    if (!file.docs) return;
-    const copyedMD = file.docs;
-    const regExp = new RegExp(search, "g");
-    const appendedDocs = copyedMD.replace(
-      regExp,
-      `<span className = 'highlight'>${search}</span>`
-    );
-    setMD(appendedDocs);
-  };
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const handleSelectSearchedItem = (file: IFile) => {
-    setMD(file.docs);
-  };
-
-  const handleSelectItem = (file: IFile) => {
-    const { type, docs, name } = file;
-    if (type === "file" && docs) setMD(docs);
-    setSelectedItem(name);
-  };
+  const [editMode, setEditMode] = useState(false);
 
   const searchDocs = useCallback((file: IFile, pattern: string) => {
     const result = [];
@@ -84,13 +68,55 @@ const Main = ({ workspace }: MainProps) => {
     [dirs, searchDocs]
   );
 
-  const handleChangeSearch = React.useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      setSearch(evt.target.value);
-      debouncedSearch(evt.target.value);
-    },
-    [debouncedSearch]
-  );
+  const { search, handleChangeSearch } = useSearch("", debouncedSearch);
+
+  // const appendSearchResultHightMDdocs = (file: IFile) => {
+  //   if (!file.docs) return;
+  //   const copyedMD = file.docs;
+  //   const regExp = new RegExp(search, "g");
+  //   const appendedDocs = copyedMD.replace(
+  //     regExp,
+  //     `<span className = 'highlight'>${search}</span>`
+  //   );
+  //   setMD(appendedDocs);
+  // };
+
+  const handleSelectSearchedItem = (file: IFile) => {
+    setShowSearchModal(true);
+    const nextMD = {
+      ...file,
+      docs: file.docs,
+    };
+    setMD(nextMD);
+  };
+
+  const handleSelectItem = (file: IFile) => {
+    const { type, docs, name } = file;
+    if (type === "file" && docs) {
+      setEditMode(false);
+      setMD({ file, docs });
+    }
+    setSelectedItem(name);
+  };
+
+  const handleChangeDocs = (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const nextMD = {
+      ...md,
+      docs: evt.target.value,
+    };
+    setMD(nextMD);
+  };
+
+  const handleSaveDocs = () => {
+    const rootDir = workspace.substring(0, workspace.lastIndexOf("/"));
+    if (md && md.file && md.docs)
+      window.api.send("toMain", {
+        type: "SAVE_DOCS",
+        dir: `${rootDir}/${md.file.name}`,
+        docs: md.docs,
+      });
+    setEditMode(false);
+  };
 
   useEffect(() => {
     window.api.send("toMain", { type: "GET_DIRS", workspace });
@@ -99,6 +125,7 @@ const Main = ({ workspace }: MainProps) => {
         setDirs(data.dirs);
       }
       if (data.type === "SEND_SEARCH") {
+        console.log("rr");
         setShowSearchModal((prev) => !prev);
       }
     });
@@ -171,8 +198,36 @@ const Main = ({ workspace }: MainProps) => {
           </>
         )}
       </div>
-      <div className="main">{md && <MarkDownViewr markdown={md} />}</div>
-      {showSearchModal && <SearchModal />}
+      <div className="main">
+        {md && md.docs && (
+          <div className="viewr">
+            {editMode && (
+              <textarea
+                className="editTextArea"
+                value={md.docs}
+                onChange={handleChangeDocs}
+              />
+            )}
+            <div className={!editMode ? "mdViewr" : "mdViewr-edit"}>
+              <MarkDownViewr
+                markdown={md.docs}
+                editMode={editMode}
+                handleChangeEditMode={() => {
+                  setEditMode((prev) => !prev);
+                }}
+                handleSaveDocs={handleSaveDocs}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+      {md && md.docs && showSearchModal && (
+        <SearchModal
+          searchKeyword={search}
+          docs={md.docs}
+          setMD={(docs: string) => setMD({ ...md, docs: docs })}
+        />
+      )}
     </>
   );
 };
