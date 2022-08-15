@@ -4,7 +4,7 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require("path");
 const fs = require("fs");
 const isDev = require("electron-is-dev");
-const { ipcMain, globalShortcut } = require("electron");
+const { ipcMain, globalShortcut, dialog } = require("electron");
 
 let mainWindow;
 
@@ -63,16 +63,25 @@ app
   .then(createWindow);
 
 ipcMain.on("toMain", (evt, args) => {
+  if (args.type === "GET_WORKSPACE") {
+    const workspace = dialog.showOpenDialogSync(null, {
+      properties: ["openDirectory"],
+    });
+    mainWindow.webContents.send("fromMain", {
+      type: "SEND_WORKSPACE",
+      workspace: workspace[0],
+    });
+  }
   if (args.type === "GET_DIRS") {
-    const desktopDir = app.getPath("desktop");
-    const workspaceDir = `${desktopDir}/a-did`;
+    const workspaceDir = args.workspace;
+    const rootIdx = workspaceDir.lastIndexOf("/");
     const getDirs = (file, level) => {
       const stat = fs.statSync(file);
       if (stat.isFile()) {
         // md파일이 아닌경우 추가할 것.
         const md = fs.readFileSync(file, "utf-8");
         return {
-          name: file.substring(desktopDir.length),
+          name: file.substring(rootIdx),
           type: "file",
           level,
           docs: md,
@@ -80,7 +89,7 @@ ipcMain.on("toMain", (evt, args) => {
       }
       if (stat.isDirectory()) {
         const dir = {
-          name: file.substring(desktopDir.length),
+          name: file.substring(rootIdx),
           type: "dir",
           files: [],
           level,

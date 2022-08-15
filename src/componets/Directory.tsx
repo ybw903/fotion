@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { IoChevronForward } from "react-icons/io5";
-import { IFile } from "../App";
+import { IFile } from "../Main";
 
 interface DirectoryProps {
   dirs: IFile;

@@ -1,0 +1,194 @@
+.splash {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.spalshTitle {
+  font-size: 5em;
+  color: #003da5;
+  font-weight: 700;
+  display: flex;
+}
+
+.splashTitle-1 {
+  padding: 5px;
+  animation: title-show-1 0.3s;
+}
+
+.splashTitle-2 {
+  padding: 5px;
+  animation: title-show-2 0.6s;
+}
+
+.splashTitle-3 {
+  padding: 5px;
+  animation: title-show-3 0.9s;
+}
+
+.splashTitle-4 {
+  padding: 5px;
+  animation: title-show-4 1.2s;
+}
+
+.splashTitle-5 {
+  padding: 5px;
+  animation: title-show-5 1.5s;
+}
+
+.splashTitle-6 {
+  padding: 5px;
+  animation: title-show-6 1.8s;
+}
+
+@keyframes title-show-1 {
+  from {
+    transform: translateY(-32px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes title-show-2 {
+  from {
+    transform: translateY(-35px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes title-show-3 {
+  from {
+    transform: translateY(-38px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes title-show-4 {
+  from {
+    transform: translateY(-41px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes title-show-5 {
+  from {
+    transform: translateY(-44px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes title-show-6 {
+  from {
+    transform: translateY(-47px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+.splashDescription {
+  font-size: 17px;
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 0.15em solid #003da5;
+  letter-spacing: 0.15em;
+  animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink-caret {
+  from,
+  to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #003da5;
+  }
+}
+
+.splashDir {
+  padding-top: 30px;
+  opacity: 0;
+  display: flex;
+}
+
+.splashDir-show {
+  padding-top: 30px;
+  opacity: 1;
+  transition: opacity 0.8s;
+}
+
+.splashDirInputArea {
+  display: flex;
+  align-items: center;
+}
+
+.splashDirInputAreaIcon {
+  display: flex;
+  background: #003da5;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.splashDirInput {
+  height: 30px;
+  border: 2px solid #003da5;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.splashDirInput:focus {
+  outline: none;
+}
+
+.splashDirInputBtn {
+  margin-left: 20px;
+  border: 1px solid #003da5;
+  padding: 5px 10px;
+  background: #003da5;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 400;
+  cursor: pointer;
+}

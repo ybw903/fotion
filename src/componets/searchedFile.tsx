@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { IoChevronForward } from "react-icons/io5";
-import { IFile } from "../App";
+import { IFile } from "../Main";
 
 import "./SearchedFile.css";
 
@@ -34,7 +34,9 @@ const SearchedFile = ({
         >
           {indexes.map((index) => (
             <div
-              onClick={() => handleSelectSearchedItem(file)}
+              onClick={() => {
+                handleSelectSearchedItem(file);
+              }}
               style={{ paddingBottom: "5px" }}
             >
               <span className="highlight">
