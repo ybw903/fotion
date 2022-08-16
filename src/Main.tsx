@@ -116,10 +116,17 @@ const Main = ({ workspace }: MainProps) => {
   const handleSaveDocs = () => {
     const rootDir = workspace.substring(0, workspace.lastIndexOf("/"));
     console.log(rootDir);
+    // if (md && md.file && md.docs)
+    //   window.api.send("toMain", {
+    //     type: "SAVE_DOCS",
+    //     dir: `${rootDir}/${md.file.name}`,
+    //     docs: md.docs,
+    //     workspace,
+    //   });
     if (md && md.file && md.docs)
       window.api.send("toMain", {
         type: "SAVE_DOCS",
-        dir: `${rootDir}/${md.file.name}`,
+        dir: `${md.file.name}`,
         docs: md.docs,
         workspace,
       });

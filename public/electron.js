@@ -5,6 +5,9 @@ const path = require("path");
 const fs = require("fs");
 const isDev = require("electron-is-dev");
 const { ipcMain, globalShortcut, dialog } = require("electron");
+const { platform } = require("node:process");
+
+const isWin = platform === "win32";
 
 let mainWindow;
 
@@ -110,10 +113,17 @@ ipcMain.on("toMain", (evt, args) => {
 
   if (args.type === "SAVE_DOCS") {
     const regExp = new RegExp("/", "g");
-    const dir = args.dir.replace(regExp, "\\");
-    fs.writeFileSync(dir.substring(1), args.docs, {
-      encoding: "utf-8",
-    });
+    const winDir = args.dir.replace(regExp, "\\");
+    console.log(args.dir);
+    if (isWin) {
+      fs.writeFileSync(winDir.substring(1), args.docs, {
+        encoding: "utf-8",
+      });
+    } else {
+      fs.writeFileSync(args.dir, args.docs, {
+        encoding: "utf-8",
+      });
+    }
 
     const rootIdx = args.workspace.lastIndexOf("/");
     const dirs = getDirs(args.workspace, 0, rootIdx);
@@ -125,9 +135,15 @@ ipcMain.on("toMain", (evt, args) => {
 
   if (args.type === "MAKE_FILE") {
     const regExp = new RegExp("/", "g");
-    const dir = args.dirName.replace(regExp, "\\");
-    if (fs.existsSync(dir)) return;
-    fs.writeFileSync(dir, "");
+    const winDir = args.dirName.replace(regExp, "\\");
+    if (isWin) {
+      if (fs.existsSync(winDir)) return;
+      fs.writeFileSync(winDir, "");
+    } else {
+      if (fs.existsSync(args.dirName)) return;
+      fs.writeFileSync(args.dirName, "");
+    }
+
     const rootIdx = args.workSpace.lastIndexOf("/");
     const dirs = getDirs(args.workSpace, 0, rootIdx);
     mainWindow.webContents.send("fromMain", {
@@ -139,9 +155,15 @@ ipcMain.on("toMain", (evt, args) => {
   if (args.type === "MAKE_DIR") {
     console.log(args);
     const regExp = new RegExp("/", "g");
-    const dir = args.dirName.replace(regExp, "\\");
-    if (fs.existsSync(dir)) return;
-    fs.mkdirSync(dir);
+    const winDir = args.dirName.replace(regExp, "\\");
+    if (isWin) {
+      if (fs.existsSync(winDir)) return;
+      fs.mkdirSync(winDir);
+    } else {
+      if (fs.existsSync(args.dirName)) return;
+      fs.mkdirSync(args.dirName);
+    }
+
     const rootIdx = args.workSpace.lastIndexOf("/");
     const dirs = getDirs(args.workSpace, 0, rootIdx);
     mainWindow.webContents.send("fromMain", {
