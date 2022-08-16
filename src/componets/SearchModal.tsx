@@ -32,6 +32,7 @@ const SearchModal = ({ searchKeyword, docs, setMD }: SearchModalProps) => {
       regExp,
       `<span className = 'highlight'>${search}</span>`
     );
+    console.log(appendedDocs);
     setMD(appendedDocs);
   };
 

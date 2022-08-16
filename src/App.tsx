@@ -8,6 +8,7 @@ const App = () => {
   const [showSplash, setShowSplash] = useState(true);
 
   const handleChangeWorkspace = useCallback((workspace: string) => {
+    console.log(workspace);
     setWorkspace(workspace);
   }, []);
 

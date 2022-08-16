@@ -51,16 +51,41 @@ app.on("activate", () => {
   }
 });
 
-app
-  .whenReady()
-  .then(() => {
-    globalShortcut.register("CommandOrControl+F", () => {
-      mainWindow.webContents.send("fromMain", {
-        type: "SEND_SEARCH",
-      });
+app.whenReady().then(() => {
+  globalShortcut.register("CommandOrControl+F", () => {
+    mainWindow.webContents.send("fromMain", {
+      type: "SEND_SEARCH",
     });
-  })
-  .then(createWindow);
+  });
+});
+// .then(createWindow);
+
+const getDirs = (file, level, rootIdx) => {
+  const stat = fs.statSync(file);
+  if (stat.isFile()) {
+    // md파일이 아닌경우 추가할 것.
+    const md = fs.readFileSync(file, "utf-8");
+    return {
+      name: file.substring(rootIdx),
+      type: "file",
+      level,
+      docs: md,
+    };
+  }
+  if (stat.isDirectory()) {
+    const dir = {
+      name: file.substring(rootIdx),
+      type: "dir",
+      files: [],
+      level,
+    };
+    fs.readdirSync(file).forEach((nextFile) => {
+      const nextDirs = getDirs(`${file}/${nextFile}`, level + 1);
+      dir.files.push(nextDirs);
+    });
+    return dir;
+  }
+};
 
 ipcMain.on("toMain", (evt, args) => {
   if (args.type === "GET_WORKSPACE") {
@@ -75,34 +100,8 @@ ipcMain.on("toMain", (evt, args) => {
   if (args.type === "GET_DIRS") {
     const workspaceDir = args.workspace;
     const rootIdx = workspaceDir.lastIndexOf("/");
-    const getDirs = (file, level) => {
-      const stat = fs.statSync(file);
-      if (stat.isFile()) {
-        // md파일이 아닌경우 추가할 것.
-        const md = fs.readFileSync(file, "utf-8");
-        return {
-          name: file.substring(rootIdx),
-          type: "file",
-          level,
-          docs: md,
-        };
-      }
-      if (stat.isDirectory()) {
-        const dir = {
-          name: file.substring(rootIdx),
-          type: "dir",
-          files: [],
-          level,
-        };
-        fs.readdirSync(file).forEach((nextFile) => {
-          const nextDirs = getDirs(`${file}/${nextFile}`, level + 1);
-          dir.files.push(nextDirs);
-        });
-        return dir;
-      }
-    };
 
-    const dirs = getDirs(workspaceDir, 0);
+    const dirs = getDirs(workspaceDir, 0, rootIdx);
     mainWindow.webContents.send("fromMain", {
       type: "SEND_DIRS",
       dirs,
@@ -110,6 +109,44 @@ ipcMain.on("toMain", (evt, args) => {
   }
 
   if (args.type === "SAVE_DOCS") {
-    fs.writeFileSync(args.dir, args.docs, { encoding: "utf-8" });
+    const regExp = new RegExp("/", "g");
+    const dir = args.dir.replace(regExp, "\\");
+    fs.writeFileSync(dir.substring(1), args.docs, {
+      encoding: "utf-8",
+    });
+
+    const rootIdx = args.workspace.lastIndexOf("/");
+    const dirs = getDirs(args.workspace, 0, rootIdx);
+    mainWindow.webContents.send("fromMain", {
+      type: "SEND_DIRS",
+      dirs,
+    });
+  }
+
+  if (args.type === "MAKE_FILE") {
+    const regExp = new RegExp("/", "g");
+    const dir = args.dirName.replace(regExp, "\\");
+    if (fs.existsSync(dir)) return;
+    fs.writeFileSync(dir, "");
+    const rootIdx = args.workSpace.lastIndexOf("/");
+    const dirs = getDirs(args.workSpace, 0, rootIdx);
+    mainWindow.webContents.send("fromMain", {
+      type: "SEND_DIRS",
+      dirs,
+    });
+  }
+
+  if (args.type === "MAKE_DIR") {
+    console.log(args);
+    const regExp = new RegExp("/", "g");
+    const dir = args.dirName.replace(regExp, "\\");
+    if (fs.existsSync(dir)) return;
+    fs.mkdirSync(dir);
+    const rootIdx = args.workSpace.lastIndexOf("/");
+    const dirs = getDirs(args.workSpace, 0, rootIdx);
+    mainWindow.webContents.send("fromMain", {
+      type: "SEND_DIRS",
+      dirs,
+    });
   }
 });

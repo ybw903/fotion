@@ -3,7 +3,13 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./Main.css";
 import MarkDownViewr from "./componets/MarkDownVierw";
 import { searchPattern } from "./utils/search";
-import { IoMenu, IoFolderOpen, IoSearch } from "react-icons/io5";
+import {
+  IoMenu,
+  IoFolderOpen,
+  IoSearch,
+  IoAddCircleOutline,
+  IoAddCircle,
+} from "react-icons/io5";
 import Directory from "./componets/Directory";
 import Input from "./componets/Input";
 import SearchedFile from "./componets/searchedFile";
@@ -92,7 +98,7 @@ const Main = ({ workspace }: MainProps) => {
 
   const handleSelectItem = (file: IFile) => {
     const { type, docs, name } = file;
-    if (type === "file" && docs) {
+    if (type === "file") {
       setEditMode(false);
       setMD({ file, docs });
     }
@@ -109,11 +115,13 @@ const Main = ({ workspace }: MainProps) => {
 
   const handleSaveDocs = () => {
     const rootDir = workspace.substring(0, workspace.lastIndexOf("/"));
+    console.log(rootDir);
     if (md && md.file && md.docs)
       window.api.send("toMain", {
         type: "SAVE_DOCS",
         dir: `${rootDir}/${md.file.name}`,
         docs: md.docs,
+        workspace,
       });
     setEditMode(false);
   };
@@ -130,14 +138,14 @@ const Main = ({ workspace }: MainProps) => {
       }
     });
   }, []);
-
+  console.log(md, selectedItem);
   return (
     <>
       <div className={menuFold ? "leftMenu-fold" : "leftMenu"}>
         <div className="menuHeader">
           {!menuFold && <div>메뉴</div>}
           <div onClick={() => setMenuFold((prev) => !prev)}>
-            <IoMenu size={28} />
+            <IoMenu size={28} style={{ cursor: "pointer" }} />
           </div>
         </div>
         {!menuFold && (
@@ -150,6 +158,7 @@ const Main = ({ workspace }: MainProps) => {
                       dirs={dirs}
                       handleSelectItem={handleSelectItem}
                       selectedItem={selectedItem}
+                      workSpace={workspace}
                     />
                   )}
                 </div>
@@ -189,7 +198,10 @@ const Main = ({ workspace }: MainProps) => {
               </div>
               <div
                 className="menuTab"
-                onClick={() => setMenuTab(MENU_TYPE.SEARCH)}
+                onClick={() => {
+                  setEditMode(false);
+                  setMenuTab(MENU_TYPE.SEARCH);
+                }}
               >
                 <IoSearch size={28} style={{ paddingRight: "5px" }} />
                 검색
@@ -198,8 +210,8 @@ const Main = ({ workspace }: MainProps) => {
           </>
         )}
       </div>
-      <div className="main">
-        {md && md.docs && (
+      <div className={menuFold ? "main-fold" : "main"}>
+        {md && (
           <div className="viewr">
             {editMode && (
               <textarea
@@ -210,7 +222,7 @@ const Main = ({ workspace }: MainProps) => {
             )}
             <div className={!editMode ? "mdViewr" : "mdViewr-edit"}>
               <MarkDownViewr
-                markdown={md.docs}
+                markdown={md.docs ?? ""}
                 editMode={editMode}
                 handleChangeEditMode={() => {
                   setEditMode((prev) => !prev);

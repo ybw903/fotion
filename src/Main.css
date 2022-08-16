@@ -67,6 +67,14 @@
   height: 100%;
   width: calc(100% - 280px);
   overflow: auto;
+  transition: width 0.5s;
+}
+
+.main-fold {
+  height: 100%;
+  width: calc(100% - 50px);
+  overflow: auto;
+  transition: width 0.5s;
 }
 
 .item {
@@ -115,11 +123,11 @@
 }
 
 .editTextArea {
-  height: 100%;
   width: 50%;
   border: none;
   border-right: 1px solid lightgray;
   padding: 20px;
+  overflow: auto;
 }
 
 .editTextArea:focus {
@@ -139,6 +147,7 @@
 
 .mdViewr {
   width: 100%;
+  overflow: auto;
 }
 
 .mdViewr-edit {
