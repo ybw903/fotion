@@ -16,23 +16,21 @@ const SearchModal = ({ searchKeyword, docs, setMD }: SearchModalProps) => {
   const debouncedSearch = React.useMemo(
     () =>
       debounce((pattern: string) => {
-        // if (!dirs) return;
-        // const result = searchDocs(dirs, pattern);
-        // setSearchResults(result);
-        const result = searchPattern(docs, pattern);
-        appendSearchResultHightMDdocs(docs);
-      }, 300),
+        if (pattern && pattern.length > 0)
+          appendSearchResultHightMDdocs(pattern);
+      }, 750),
     []
   );
-  const appendSearchResultHightMDdocs = (docs: string) => {
+  const appendSearchResultHightMDdocs = (pattern: string) => {
     if (!setMD) return;
+
     const copyedMD = docs;
-    const regExp = new RegExp(search, "g");
+    const regExp = new RegExp(pattern, "g");
+
     const appendedDocs = copyedMD.replace(
       regExp,
-      `<span className = 'highlight'>${search}</span>`
+      `<span className = 'highlight'>${pattern}</span>`
     );
-    console.log(appendedDocs);
     setMD(appendedDocs);
   };
 
@@ -44,7 +42,8 @@ const SearchModal = ({ searchKeyword, docs, setMD }: SearchModalProps) => {
   return (
     <Modal>
       <div className="searchModal">
-        <Input onChange={handleChangeSearch} value={search} />
+        <div>{search}</div>
+        <Input onChange={handleChangeSearch} value={search} autofocus />
       </div>
     </Modal>
   );

@@ -3,18 +3,14 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./Main.css";
 import MarkDownViewr from "./componets/MarkDownVierw";
 import { searchPattern } from "./utils/search";
-import {
-  IoMenu,
-  IoFolderOpen,
-  IoSearch,
-  IoAddCircleOutline,
-  IoAddCircle,
-} from "react-icons/io5";
+import { IoMenu, IoFolderOpen, IoSearch } from "react-icons/io5";
 import Directory from "./componets/Directory";
 import Input from "./componets/Input";
 import SearchedFile from "./componets/searchedFile";
 import SearchModal from "./componets/SearchModal";
 import useSearch from "./hooks/useSearch";
+import { EditorView, basicSetup } from "codemirror";
+import useCodeMirror from "./hooks/useCodeMirror";
 
 export interface IFile {
   name: string;
@@ -45,7 +41,15 @@ const Main = ({ workspace }: MainProps) => {
   >();
   const [showSearchModal, setShowSearchModal] = useState(false);
 
-  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  const handleChangeDocs = (docs: string) => {
+    const nextMD = {
+      ...md,
+      docs: docs,
+    };
+    setMD(nextMD);
+  };
+
+  const { ref } = useCodeMirror([], md?.docs, handleChangeDocs);
 
   const [editMode, setEditMode] = useState(false);
 
@@ -105,14 +109,6 @@ const Main = ({ workspace }: MainProps) => {
     setSelectedItem(name);
   };
 
-  const handleChangeDocs = (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const nextMD = {
-      ...md,
-      docs: evt.target.value,
-    };
-    setMD(nextMD);
-  };
-
   const handleSaveDocs = () => {
     const rootDir = workspace.substring(0, workspace.lastIndexOf("/"));
     console.log(rootDir);
@@ -145,7 +141,7 @@ const Main = ({ workspace }: MainProps) => {
       }
     });
   }, []);
-  console.log(md, selectedItem);
+
   return (
     <>
       <div className={menuFold ? "leftMenu-fold" : "leftMenu"}>
@@ -221,10 +217,11 @@ const Main = ({ workspace }: MainProps) => {
         {md && (
           <div className="viewr">
             {editMode && (
-              <textarea
+              <div
                 className="editTextArea"
-                value={md.docs}
-                onChange={handleChangeDocs}
+                // value={md.docs}
+                // onChange={handleChangeDocs}
+                ref={ref}
               />
             )}
             <div className={!editMode ? "mdViewr" : "mdViewr-edit"}>

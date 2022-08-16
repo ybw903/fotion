@@ -14,6 +14,7 @@ interface DirectoryProps {
   selectedItem: string;
   handleSelectItem: (dir: IFile) => void;
   workSpace: string;
+  show?: boolean;
 }
 
 const Directory = ({
@@ -21,6 +22,7 @@ const Directory = ({
   handleSelectItem,
   selectedItem,
   workSpace,
+  show = true,
 }: DirectoryProps) => {
   const { name, type, files, level, docs } = dirs;
   const [fold, setFold] = useState(false);
@@ -51,7 +53,7 @@ const Directory = ({
   };
 
   return (
-    <div className={type}>
+    <div className={type} style={{ display: show ? "block" : "none" }}>
       <div
         key={name}
         className={name === selectedItem ? "item-selected" : "item"}
@@ -61,11 +63,19 @@ const Directory = ({
         {type === "dir" && <IoChevronForward />}
         {`${name.substring(name.lastIndexOf("/") + 1)}`}
         {name === selectedItem && type === "dir" && (
-          <div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "relative",
+            }}
+          >
             <IoAddCircleOutline
               size={20}
               style={{ paddingLeft: "5px" }}
               onClick={handleClickAddBtn}
+              cursor={"pointer"}
             />
             {showDropdown && (
               <Dropdown
@@ -105,10 +115,22 @@ const Directory = ({
                 workSpace,
               });
             }}
+            onKeyDown={(evt) => {
+              if (evt.key === "Enter") {
+                setAddFile(undefined);
+                setAddFileName("");
+                if (!addFileName || addFileName.length === 0) return;
+                window.api.send("toMain", {
+                  type: addFile === "FILE" ? "MAKE_FILE" : "MAKE_DIR",
+                  dirName: `${dirs.name}/${addFileName}`,
+                  workSpace,
+                });
+              }
+            }}
           />
         </div>
       )}
-      {files && !fold && (
+      {/* {files && !fold && (
         <div>
           {files.map((file) => (
             <Directory
@@ -117,6 +139,20 @@ const Directory = ({
               handleSelectItem={handleSelectItem}
               selectedItem={selectedItem}
               key={name}
+            />
+          ))}
+        </div>
+      )} */}
+      {files && (
+        <div>
+          {files.map((file) => (
+            <Directory
+              workSpace={workSpace}
+              dirs={file}
+              handleSelectItem={handleSelectItem}
+              selectedItem={selectedItem}
+              key={name}
+              show={!fold}
             />
           ))}
         </div>
