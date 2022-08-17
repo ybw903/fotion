@@ -13,12 +13,11 @@ const Splash = ({
   handleChangeWorkSpace,
 }: SplashProps) => {
   const dirInputRef = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
   const [directory, setDirectory] = useState("");
 
   const handleInputClick = useCallback(() => {
     window.api.send("toMain", { type: "GET_WORKSPACE" });
-  }, [inputRef]);
+  }, []);
 
   const handleClickSetting = () => {
     if (!directory || directory.length === 0) return;
@@ -31,10 +30,7 @@ const Splash = ({
       if (!dirInputRef || !dirInputRef.current) return;
       dirInputRef.current.classList.add("splashDir-show");
     }, 3800);
-    if (inputRef.current) {
-      inputRef.current.setAttribute("directory", "");
-      inputRef.current.setAttribute("webkitdirectory", "");
-    }
+
     window.api.receive("fromMain", (data) => {
       if (data.type === "SEND_WORKSPACE") {
         setDirectory(data.workspace);
@@ -55,8 +51,8 @@ const Splash = ({
       <div className="splashDescription">당신을 위한 markdown editor</div>
       <div className="splashDir" ref={dirInputRef}>
         <div className="splashDirInputArea">
-          <div className="splashDirInputAreaIcon">
-            <IoFolderOpenOutline color="#fff" onClick={handleInputClick} />
+          <div className="splashDirInputAreaIcon" onClick={handleInputClick}>
+            <IoFolderOpenOutline color="#fff" />
           </div>
 
           <input className="splashDirInput" value={directory} readOnly />
