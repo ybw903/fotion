@@ -145,13 +145,13 @@ const Directory = ({
       )} */}
       {files && (
         <div>
-          {files.map((file) => (
+          {files.map((file, i) => (
             <Directory
               workSpace={workSpace}
               dirs={file}
               handleSelectItem={handleSelectItem}
               selectedItem={selectedItem}
-              key={name}
+              key={`${level}-${name}-${i}`}
               show={!fold}
             />
           ))}

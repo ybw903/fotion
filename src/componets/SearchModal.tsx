@@ -2,7 +2,10 @@ import debounce from "lodash.debounce";
 import React, { useCallback } from "react";
 import Modal from "../core/Modal";
 import useSearch from "../hooks/useSearch";
-import { searchPattern } from "../utils/search";
+import {
+  highlightPatternInText,
+  removeHightPatternInText,
+} from "../utils/strUtil";
 import Input from "./Input";
 import "./SearchModal.css";
 
@@ -16,23 +19,15 @@ const SearchModal = ({ searchKeyword, docs, setMD }: SearchModalProps) => {
   const debouncedSearch = React.useMemo(
     () =>
       debounce((pattern: string) => {
+        console.log(pattern);
+        if (!pattern || pattern.length === 0) {
+          setMD?.(removeHightPatternInText(docs));
+        }
         if (pattern && pattern.length > 0)
-          appendSearchResultHightMDdocs(pattern);
+          setMD?.(highlightPatternInText(pattern, docs));
       }, 750),
-    []
+    [docs, setMD]
   );
-  const appendSearchResultHightMDdocs = (pattern: string) => {
-    if (!setMD) return;
-
-    const copyedMD = docs;
-    const regExp = new RegExp(pattern, "g");
-
-    const appendedDocs = copyedMD.replace(
-      regExp,
-      `<span className = 'highlight'>${pattern}</span>`
-    );
-    setMD(appendedDocs);
-  };
 
   const { search, handleChangeSearch } = useSearch(
     searchKeyword,
@@ -42,7 +37,6 @@ const SearchModal = ({ searchKeyword, docs, setMD }: SearchModalProps) => {
   return (
     <Modal>
       <div className="searchModal">
-        <div>{search}</div>
         <Input onChange={handleChangeSearch} value={search} autofocus />
       </div>
     </Modal>
