@@ -114,6 +114,10 @@
   padding: 2px;
 }
 
+.token.keyword.keyword-Car {
+  color: #000;
+}
+
 .editTextArea {
   height: 100%;
   width: 50%;

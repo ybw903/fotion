@@ -1,5 +1,5 @@
 import debounce from "lodash.debounce";
-import React, { useCallback } from "react";
+import React, { useEffect } from "react";
 import Modal from "../core/Modal";
 import useSearch from "../hooks/useSearch";
 import {
@@ -33,6 +33,10 @@ const SearchModal = ({ searchKeyword, docs, setMD }: SearchModalProps) => {
     searchKeyword,
     debouncedSearch
   );
+
+  useEffect(() => {
+    return () => setMD?.(removeHightPatternInText(docs));
+  }, []);
 
   return (
     <Modal>

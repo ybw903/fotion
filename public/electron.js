@@ -116,7 +116,7 @@ ipcMain.on("toMain", (evt, args) => {
     const winDir = args.dir.replace(regExp, "\\");
     console.log(args.dir);
     if (isWin) {
-      fs.writeFileSync(winDir.substring(1), args.docs, {
+      fs.writeFileSync(winDir, args.docs, {
         encoding: "utf-8",
       });
     } else {
